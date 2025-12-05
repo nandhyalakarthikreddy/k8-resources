@@ -13,7 +13,7 @@ spec:
     driver: ebs.csi.aws.com
     fsType: ext4
     volumeHandle: vol-0186fa006a0e197b0
-    
+
 ---
 
 apiVersion: v1
@@ -28,3 +28,25 @@ spec:
   resources:
     requests:
       storage: 15Gi
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    purpose: ebs-static
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    volumeMounts:
+    - name: nginx-html
+      mountPath: /usr/share/nginx/html
+  nodeSelector:
+    topology.kubernetes.io/zone: us-east-1a
+  volumes:
+  - name: nginx-html
+    persistentVolumeClaim:
+      claimName: ebs-static
